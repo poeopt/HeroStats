@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # ⚔️ Hero Siege Stats
 
@@ -18,17 +18,20 @@
 
 ---
 
-## 🇷🇺 Русский
+## ##🇺 Русский
 
 ### О программе
 
-**Hero Siege Stats** — это оверлей-программа для Hero Siege, которая отображает статистику фарма прямо поверх игры.
+**Hero Siege Stats** — это оверлей-программа для Hero Siege, которая   отображает статистику фарма прямо поверх игры.
 
 Программа построена на базе открытого проекта [GuilhermeFaga/hero-siege-stats](https://github.com/GuilhermeFaga/hero-siege-stats) и существенно расширена новым функционалом.
 
 ### 🖼️ Превью
 
-![App preview](assets/readme/preview.png)
+| | | |
+|:---:|:---:|:---:|
+| ![](assets/readme/1.PNG) | ![](assets/readme/2.PNG) | ![](assets/readme/3.PNG) |
+| ![](assets/readme/4.PNG) | ![](assets/readme/5.PNG) | |
 
 ### ✨ Функции
 
@@ -118,9 +121,16 @@ poetry run python build.py
 
 ### About
 
-**Hero Siege Stats** is an overlay application for Hero Siege that passively intercepts network traffic between the game client and server, displaying real-time farming statistics over the game window.
+**Hero Siege Stats** is an overlay application for Hero Siege that displaying real-time farming statistics over the game window.
 
 Built on top of the open-source project [GuilhermeFaga/hero-siege-stats](https://github.com/GuilhermeFaga/hero-siege-stats) with significant new features added.
+
+### 🖼️ Screenshots
+
+| | | |
+|:---:|:---:|:---:|
+| ![](assets/readme/1.PNG) | ![](assets/readme/2.PNG) | ![](assets/readme/3.PNG) |
+| ![](assets/readme/4.PNG) | ![](assets/readme/5.PNG) | |
 
 ### ✨ Features
 
@@ -225,3 +235,4 @@ Inspired by [Albion Online Stats](https://github.com/mazurwiktor/albion-online-s
 [![Discord](https://img.shields.io/badge/Join%20Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/SjkJM6nv)
 
 </div>
+
