@@ -87,10 +87,10 @@
 ### 📦 Установка и запуск
 
 **Быстрый старт (EXE):**
-1. Установи [Npcap](https://npcap.com/dist/npcap-1.77.exe) — нужен для перехвата трафика
-2. Скачай `HeroSiegeStats.exe` со [страницы релизов](https://github.com/poeopt/HeroStats/releases)
-3. Запусти от имени администратора
-4. Запусти Hero Siege и начни играть
+1. Скачай `HeroSiegeStats.exe` со [страницы релизов](https://github.com/poeopt/HeroStats/releases)
+2. Запусти от имени администратора
+3. Запусти Hero Siege и начни играть
+4. Можно запускать во время работающего Hero Siege, но нужно обновить локацию.
 
 **Из исходников:**
 ```bash
@@ -186,10 +186,9 @@ This tool only **reads passive network traffic** between client and server — i
 ### 📦 Installation
 
 **Quick start (EXE):**
-1. Install [Npcap](https://npcap.com/dist/npcap-1.77.exe) — required for traffic capture
-2. Download `HeroSiegeStats.exe` from the [releases page](https://github.com/poeopt/HeroStats/releases)
-3. Run as Administrator
-4. Launch Hero Siege and start playing
+1. Download `HeroSiegeStats.exe` from the [releases page](https://github.com/poeopt/HeroStats/releases)
+2. Run as Administrator
+3. Can be launched while Hero Siege is running, but the location needs to be updated.
 
 **Run from source:**
 ```bash
