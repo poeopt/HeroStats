@@ -223,11 +223,6 @@ Place WAV files (max 5 seconds) into `assets/sounds/`:
 ![PySide6](https://img.shields.io/badge/PySide6-6.5-41CD52?logo=qt&logoColor=white)
 ![Scapy](https://img.shields.io/badge/Scapy-2.5-1a1a1a)
 
-## 🙏 Credits
-
-Based on [hero-siege-stats](https://github.com/GuilhermeFaga/hero-siege-stats) by [Guilherme Faga](https://faga.dev)  
-Thanks to **Shalwkz** for server address research  
-Inspired by [Albion Online Stats](https://github.com/mazurwiktor/albion-online-stats)
 
 ## 💬 Community
 
