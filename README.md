@@ -18,7 +18,7 @@
 
 ---
 
-## ##🇺 Русский
+## Русский
 
 ### О программе
 
@@ -117,7 +117,7 @@ poetry run python build.py
 
 ---
 
-## 🇬🇧 English
+## English
 
 ### About
 
