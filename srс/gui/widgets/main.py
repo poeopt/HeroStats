@@ -170,18 +170,24 @@ class MainWidget(QWidget):
 
     # ── Drop notification ─────────────────────────────────────────────
     def _on_drop(self, entry) -> None:
-        key = {
+        # Проверяем включены ли уведомления для данной редкости
+        notify_map = {
             "Satanic": "notify_satanic",
             "Angelic": "notify_angelic",
             "Unholy":  "notify_angelic",
             "Heroic":  "notify_heroic",
-        }.get(entry.rarity)
+        }
+        key = notify_map.get(entry.rarity)
         if key and not config.get(key):
             return
+
+        # Toast уведомление
         rarity = entry.rarity.lower()
-        valid_keys = {"satanic", "angelic", "unholy", "heroic"}
-        toast_key = f"toast_{rarity}" if rarity in valid_keys else "toast_satanic"
-        QTimer.singleShot(0, lambda: self._toast.show_drop(entry.rarity, t(toast_key)))
+        valid_toast = {"satanic", "angelic", "unholy", "heroic"}
+        toast_key = f"toast_{rarity}" if rarity in valid_toast else "toast_heroic"
+        QTimer.singleShot(0, lambda r=entry.rarity, k=toast_key: self._toast.show_drop(r, t(k)))
+
+        # Звук для каждой редкости
         if config.get("sound_enabled"):
             play_sound(entry.rarity, enabled=True)
 
