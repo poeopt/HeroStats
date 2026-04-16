@@ -8,7 +8,6 @@ from PySide6.QtCore import Qt, QTimer
 from src.gui.components.value_display import ValueDisplay
 from src.gui.components.zone_panel import ZonePanel
 from src.gui.components.collapsible import CollapsibleSection
-from src.gui.components.progress_panel import ProgressPanel
 
 from src.models.stats.stats import Stats
 from src.engine import Engine
@@ -19,7 +18,7 @@ _GOLD    = "#C3AF75"
 _ANGELIC = "#F6F794"
 _HEROIC  = "#00FFAE"
 _SATANIC = "#CA1717"
-_MF      = "#4040A0"
+_MF      = "#8080C0"
 
 
 def _c(col: str, txt: str) -> str:
@@ -32,7 +31,8 @@ class _Row(QWidget):
         lo = QHBoxLayout(self)
         lo.setContentsMargins(6, 0, 6, 0)
         lo.setSpacing(3)
-        for w in widgets: lo.addWidget(w)
+        for w in widgets:
+            lo.addWidget(w)
         lo.addStretch()
 
 
@@ -40,40 +40,48 @@ class _Row(QWidget):
 class CharacterCard(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.setFixedHeight(36)
-        self.setStyleSheet("background:#0a0707;border-bottom:1px solid #150e0e;")
+        self.setObjectName("CharCard")
+        self.setFixedHeight(30)
 
         lo = QHBoxLayout(self)
-        lo.setContentsMargins(10, 0, 8, 0)
-        lo.setSpacing(8)
+        lo.setContentsMargins(8, 0, 8, 0)
+        lo.setSpacing(6)
 
-        info = QVBoxLayout(); info.setSpacing(0); info.setContentsMargins(0,0,0,0)
-        self._class = QLabel("—")
-        self._class.setStyleSheet("color:#5a3a20;font-size:9px;font-family:'CookieRun Bold';background:transparent;")
+        # Иконка персонажа (место под аватар)
+        from src.gui.components.image import ImageWidget
+        from src.consts import assets as ac
+        from src.utils import assets as au
+        self._icon = ImageWidget(au.icon(ac.IcTime))  # placeholder
+        self._icon.setFixedSize(20, 20)
+        lo.addWidget(self._icon)
+
+        # Имя + класс в одной строке
         self._name  = QLabel("Waiting for game...")
-        self._name.setStyleSheet("color:#C3AF75;font-size:13px;font-family:'CookieRun Bold';background:transparent;")
-        info.addWidget(self._class)
-        info.addWidget(self._name)
-        lo.addLayout(info)
+        self._name.setObjectName("CharName")
+        lo.addWidget(self._name)
+
+        self._class = QLabel("")
+        self._class.setObjectName("CharClass")
+        lo.addWidget(self._class)
 
         self._lvl = QLabel("")
-        self._lvl.setStyleSheet("color:#4a3520;font-size:10px;font-family:'CookieRun Bold';background:transparent;")
+        self._lvl.setObjectName("CharLevel")
         lo.addWidget(self._lvl)
+
         lo.addStretch()
 
-        self._mode_badge = self._badge("—", "#151010", "#5a3020")
-        self._diff_badge = self._badge("—", "#151010", "#5a3020")
+        self._mode_badge = QLabel("")
+        self._mode_badge.setObjectName("Badge")
+        self._mode_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._mode_badge.setMinimumWidth(55)
+
+        self._diff_badge = QLabel("")
+        self._diff_badge.setObjectName("Badge")
+        self._diff_badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._diff_badge.setMinimumWidth(55)
+
         lo.addWidget(self._mode_badge)
         lo.addWidget(self._diff_badge)
-
-    def _badge(self, txt, bg, fg) -> QLabel:
-        l = QLabel(txt)
-        l.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        l.setMinimumWidth(60)
-        l.setStyleSheet(
-            f"background:{bg};color:{fg};border:1px solid {fg}44;"
-            "border-radius:3px;font-size:10px;font-family:'CookieRun Bold';padding:1px 6px;")
-        return l
 
     _MODE_STYLE = {
         "GSS": ("#0a1e12","#00FFAE"), "GSH": ("#1e0a0a","#CA1717"),
@@ -81,7 +89,9 @@ class CharacterCard(QWidget):
         "GBP": ("#1a150a","#C3AF75"),
     }
     _DIFF_STYLE = {
-        0: ("#0a150a","#50A030"), 1: ("#150f0a","#C07030"), 2: ("#150a0a","#CA1717"),
+        0: ("#0a150a","#50A030"),
+        1: ("#150f0a","#C07030"),
+        2: ("#150a0a","#CA1717"),
     }
 
     def update_account(self, acc) -> None:
@@ -94,40 +104,39 @@ class CharacterCard(QWidget):
         hero = f"  ·  Hero {acc.hero_level}" if acc.hero_level else ""
         self._lvl.setText(f"Lv.{acc.level}{hero}")
 
-        mb, mf = self._MODE_STYLE.get(acc.mode, ("#151010","#5a3020"))
+        mb, mf = self._MODE_STYLE.get(acc.mode, ("", ""))
         self._mode_badge.setText(acc.mode_label)
-        self._mode_badge.setStyleSheet(
-            f"background:{mb};color:{mf};border:1px solid {mf}44;"
-            "border-radius:3px;font-size:10px;font-family:'CookieRun Bold';padding:1px 6px;")
+        if mb:
+            self._mode_badge.setStyleSheet(
+                f"background:{mb};color:{mf};border:1px solid {mf}44;"
+                "border-radius:3px;font-size:10px;padding:1px 6px;")
 
-        db, df = self._DIFF_STYLE.get(acc.difficulty, ("#151010","#5a3020"))
+        db, df = self._DIFF_STYLE.get(acc.difficulty, ("", ""))
         self._diff_badge.setText(acc.diff_label)
-        self._diff_badge.setStyleSheet(
-            f"background:{db};color:{df};border:1px solid {df}44;"
-            "border-radius:3px;font-size:10px;font-family:'CookieRun Bold';padding:1px 6px;")
+        if db:
+            self._diff_badge.setStyleSheet(
+                f"background:{db};color:{df};border:1px solid {df}44;"
+                "border-radius:3px;font-size:10px;padding:1px 6px;")
 
 
 # ── Session row ───────────────────────────────────────────────────────
 class SessionRow(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.setStyleSheet("background:#181212;border-bottom:1px solid #150e0e;")
+        self.setObjectName("SessionRow")
+
         lo = QHBoxLayout(self)
         lo.setContentsMargins(6, 2, 6, 2)
         lo.setSpacing(3)
 
-        self._dur  = ValueDisplay(icon=fc.IcTime, value="0:00:00",
-                                  size=Sizes.Large)
+        self._dur  = ValueDisplay(icon=fc.IcTime, value="0:00:00", size=Sizes.Large)
         self._mail = QLabel("—")
         self._mail.setObjectName("MailInactive")
         self._mail.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._mail.setFixedWidth(52)
 
         self._death = QLabel("")
-        self._death.setStyleSheet(
-            "color:#CA1717;font-size:10px;font-family:'CookieRun Bold';"
-            "background:transparent;border:none;")
-        self._death.setToolTip("Смертей за сессию")
+        self._death.setObjectName("DeathLabel")
         self._death.hide()
 
         self._copy = QPushButton("⎘")
@@ -150,7 +159,7 @@ class SessionRow(QWidget):
 
         self._had_mail = False
         self._blink_v  = True
-        self._btimer = QTimer(self)
+        self._btimer   = QTimer(self)
         self._btimer.timeout.connect(self._blink)
 
     def _blink(self):
@@ -193,7 +202,9 @@ def _format_text(stats: Stats) -> str:
     ang_m = items['Angelic']['mf']    + items['Unholy']['mf']
     lines = [f"Hero Siege Stats  {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"]
     if acc.class_id != -1:
-        lines.append(f"{acc.class_name} {acc.name}  Lv.{acc.level} Hero {acc.hero_level}  {acc.mode_label} {acc.diff_label}")
+        lines.append(
+            f"{acc.class_name} {acc.name}  Lv.{acc.level} "
+            f"Hero {acc.hero_level}  {acc.mode_label} {acc.diff_label}")
     lines += [
         f"Session: {stats.session.get_duration_str()}  Deaths: {stats.death_count}",
         f"Gold:  {stats.gold.total_gold:,}  +{stats.gold.total_gold_earned:,}  {stats.gold.gold_per_hour:,}/h",
@@ -207,8 +218,6 @@ def _format_text(stats: Stats) -> str:
     if stats.satanic_zone.satanic_zone_info:
         z = stats.satanic_zone.satanic_zone_info
         lines.append(f"Zone: {z.satanic_zone}")
-        for b in z.buffs:
-            lines.append(f"  · {b.buff_name}")
     return "\n".join(lines)
 
 
@@ -223,37 +232,36 @@ class StatsLayout(QWidget):
         lo.setSpacing(0)
         lo.setContentsMargins(0, 0, 0, 0)
 
-        self.char_card = CharacterCard()
-        lo.addWidget(self.char_card)
-
+        self.char_card   = CharacterCard()
         self.session_row = SessionRow()
+        lo.addWidget(self.char_card)
         lo.addWidget(self.session_row)
 
         # Gold
         self._s_gold = CollapsibleSection("Gold", "gold", True)
         self._g0 = ValueDisplay(icon=fc.IcCoins, value="0")
-        self._g1 = ValueDisplay(value="+0", size=Sizes.Medium)
-        self._g2 = ValueDisplay(value="0/h",size=Sizes.Medium)
+        self._g1 = ValueDisplay(value="+0",  size=Sizes.Medium)
+        self._g2 = ValueDisplay(value="0/h", size=Sizes.Medium)
         self._s_gold.add_widget(_Row(self._g0, self._g1, self._g2))
         lo.addWidget(self._s_gold)
 
         # XP
         self._s_xp = CollapsibleSection("Experience", "xp", True)
         self._x0 = ValueDisplay(icon=fc.IcXp, value="0")
-        self._x1 = ValueDisplay(value="+0", size=Sizes.Medium)
-        self._x2 = ValueDisplay(value="0/h",size=Sizes.Medium)
+        self._x1 = ValueDisplay(value="+0",  size=Sizes.Medium)
+        self._x2 = ValueDisplay(value="0/h", size=Sizes.Medium)
         self._s_xp.add_widget(_Row(self._x0, self._x1, self._x2))
         lo.addWidget(self._s_xp)
 
         # Items
         self._s_items = CollapsibleSection("Angelic · Heroic · Satanic", "items", True)
-        self._a0 = ValueDisplay(icon=fc.IcChest, value="0(0)")
+        self._a0 = ValueDisplay(icon=fc.IcChest, value="0")
         self._a1 = ValueDisplay(value="0|0/h", size=Sizes.Medium)
         self._a2 = ValueDisplay(value="0|0/h", size=Sizes.Medium)
-        self._h0 = ValueDisplay(icon=fc.IcChest, value="0(0)")
+        self._h0 = ValueDisplay(icon=fc.IcChest, value="0")
         self._h1 = ValueDisplay(value="0|0/h", size=Sizes.Medium)
         self._h2 = ValueDisplay(value="0|0/h", size=Sizes.Medium)
-        self._S0 = ValueDisplay(icon=fc.IcChest, value="0(0)")
+        self._S0 = ValueDisplay(icon=fc.IcChest, value="0")
         self._S1 = ValueDisplay(value="0|0/h", size=Sizes.Medium)
         self._S2 = ValueDisplay(value="0|0/h", size=Sizes.Medium)
         self._s_items.add_widget(_Row(self._a0, self._a1, self._a2))
@@ -266,19 +274,6 @@ class StatsLayout(QWidget):
         self.zone_panel = ZonePanel()
         self._s_zone.add_widget(self.zone_panel)
         lo.addWidget(self._s_zone)
-
-        # Chaos Tower
-        self._s_ct = CollapsibleSection("Chaos Tower", "chaos", False)
-        self.progress = ProgressPanel()
-        self._s_ct.add_widget(self.progress)
-        lo.addWidget(self._s_ct)
-
-    def _ir(self, col, t, m, r, total, mf, ph):
-        c, cm = col, _MF
-        v = (f'{_c(c,str(total))} {_c(cm,f"({mf})")} '
-             f'{_c("#3a2010","|")} {_c(c,f"{ph}/h")}')
-        t.setValue(f'{_c(c,str(total))} {_c(cm,f"({mf})")}')
-        m.setValue(v); r.setValue(v)
 
     def update_stats(self, stats: Stats):
         self.char_card.update_account(stats.account)
@@ -298,15 +293,25 @@ class StatsLayout(QWidget):
         ph    = stats.added_items.items_per_hour
         at = items['Angelic']['total'] + items['Unholy']['total']
         am = items['Angelic']['mf']    + items['Unholy']['mf']
-        ah = ph.get('Angelic',0) + ph.get('Unholy',0)
-        self._ir(_ANGELIC, self._a0, self._a1, self._a2, at, am, ah)
-        self._ir(_HEROIC,  self._h0, self._h1, self._h2,
-                 items['Heroic']['total'],  items['Heroic']['mf'],  ph.get('Heroic',0))
-        self._ir(_SATANIC, self._S0, self._S1, self._S2,
-                 items['Satanic']['total'], items['Satanic']['mf'], ph.get('Satanic',0))
+        ah = ph.get('Angelic', 0)      + ph.get('Unholy', 0)
+
+        self._a0.setValue(f'{_c(_ANGELIC, str(at))} {_c(_MF, f"({am})")}')
+        self._a1.setValue(f'{_c(_ANGELIC, str(at))} {_c(_MF, f"({am})")}')
+        self._a2.setValue(f'{_c(_ANGELIC, f"{ah}/h")}')
+
+        ht = items['Heroic']['total']; hm = items['Heroic']['mf']
+        hh = ph.get('Heroic', 0)
+        self._h0.setValue(f'{_c(_HEROIC, str(ht))} {_c(_MF, f"({hm})")}')
+        self._h1.setValue(f'{_c(_HEROIC, str(ht))} {_c(_MF, f"({hm})")}')
+        self._h2.setValue(f'{_c(_HEROIC, f"{hh}/h")}')
+
+        st = items['Satanic']['total']; sm = items['Satanic']['mf']
+        sh = ph.get('Satanic', 0)
+        self._S0.setValue(f'{_c(_SATANIC, str(st))} {_c(_MF, f"({sm})")}')
+        self._S1.setValue(f'{_c(_SATANIC, str(st))} {_c(_MF, f"({sm})")}')
+        self._S2.setValue(f'{_c(_SATANIC, f"{sh}/h")}')
 
         self.zone_panel.update_zone(stats.satanic_zone.satanic_zone_info)
-        self.progress.update_progress(stats.progress)
 
     def refresh(self):
         self.update_stats(Engine.get_stats())

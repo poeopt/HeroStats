@@ -1,19 +1,6 @@
-"""
-CollapsibleSection — секция со сворачиваемым содержимым.
-Нажатие на заголовок скрывает/показывает тело.
-Состояние сохраняется в config.json.
-"""
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 from PySide6.QtCore import Signal
 from src.utils import config
-
-_HDR = (
-    "QPushButton{"
-    "background:#100808;border:none;border-top:1px solid #180e0e;"
-    "color:#4a2a1a;font-size:9px;letter-spacing:1px;"
-    "text-align:left;padding:2px 8px;min-height:15px;}"
-    "QPushButton:hover{background:#180d0d;color:#8a6030;}"
-)
 
 
 class CollapsibleSection(QWidget):
@@ -21,8 +8,8 @@ class CollapsibleSection(QWidget):
 
     def __init__(self, title: str, cfg_key: str, default_open: bool = True):
         QWidget.__init__(self)
-        self._key   = f"section_{cfg_key}"
-        self._open  = config.get(self._key)
+        self._key  = f"section_{cfg_key}"
+        self._open = config.get(self._key)
         if self._open is None:
             self._open = default_open
 
@@ -31,13 +18,13 @@ class CollapsibleSection(QWidget):
         lo.setSpacing(0)
 
         self._btn = QPushButton()
-        self._btn.setStyleSheet(_HDR)
+        self._btn.setObjectName("CollapseBtn")  # стиль из QSS темы
         self._btn.setFixedHeight(15)
         self._btn.clicked.connect(self._toggle)
         lo.addWidget(self._btn)
 
         self._body = QWidget()
-        self._body.setStyleSheet("background:#181212;")
+        self._body.setObjectName("CollapseBody")  # стиль из QSS темы
         self._body_lo = QVBoxLayout(self._body)
         self._body_lo.setContentsMargins(0, 0, 0, 0)
         self._body_lo.setSpacing(2)

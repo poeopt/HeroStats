@@ -45,7 +45,7 @@ class FaqWindow(QWidget):
         QWidget.__init__(self, None,
             Qt.WindowType.Tool | Qt.WindowType.WindowStaysOnTopHint |
             Qt.WindowType.FramelessWindowHint)
-        self.setStyleSheet("QWidget{background:#181212;}")
+        self.setObjectName("FaqWindow")
         self.setFixedWidth(330)
 
         lo = QVBoxLayout(self)
@@ -54,13 +54,11 @@ class FaqWindow(QWidget):
 
         hdr = QWidget()
         hdr.setFixedHeight(24)
-        hdr.setStyleSheet("background:#0a0606;border-bottom:1px solid #180e0e;")
+        hdr.setObjectName("WinHeader")
         hdr_lo = QHBoxLayout(hdr)
         hdr_lo.setContentsMargins(8, 0, 6, 0)
         self._title_lbl = QLabel("? СПРАВКА / FAQ")
-        self._title_lbl.setStyleSheet(
-            "color:#5a3020;font-size:9px;letter-spacing:1px;"
-            "font-family:'CookieRun Bold';background:transparent;border:none;")
+        self._title_lbl.setObjectName("WinTitle")
         hdr_lo.addWidget(self._title_lbl)
         lo.addWidget(hdr)
 
@@ -71,9 +69,9 @@ class FaqWindow(QWidget):
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("QScrollArea{border:none;background:#181212;}")
+        
         self._inner = QWidget()
-        self._inner.setStyleSheet("background:#181212;")
+        self._inner.setObjectName("FaqWindow")
         self._ilo = QVBoxLayout(self._inner)
         self._ilo.setContentsMargins(10, 8, 10, 10)
         self._ilo.setSpacing(4)

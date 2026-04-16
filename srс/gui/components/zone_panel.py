@@ -4,14 +4,6 @@ from PySide6.QtGui import QPixmap, QImage
 from src.consts.satanic_buffs import get_buff_description
 from src.consts.i18n import get_lang
 
-_PANEL = """
-QFrame#ZonePanel { background:#100808; border-top:1px solid #180e0e; border-bottom:1px solid #250e0e; }
-QLabel#ZName  { color:#CA1717; font-family:"CookieRun Bold"; font-size:12px; font-weight:bold; }
-QLabel#BName  { color:#C3AF75; font-family:"CookieRun Bold"; font-size:11px; }
-QLabel#BDesc  { color:#6a5030; font-family:"CookieRun Bold"; font-size:10px; }
-QLabel#NoZone { color:#2a1a10; font-family:"CookieRun Bold"; font-size:10px; }
-"""
-
 
 class _BuffRow(QWidget):
     def __init__(self):
@@ -32,34 +24,35 @@ class _BuffRow(QWidget):
         lo.addWidget(self._desc, 1)
         self.hide()
 
-    def set(self, buff, lang: str):
+    def set(self, buff, lang: str) -> None:
         img = QImage(buff.buff_icon)
         if not img.isNull():
             self._icon.setPixmap(QPixmap.fromImage(img).scaled(
-                16, 16, Qt.AspectRatioMode.KeepAspectRatio,
+                16, 16,
+                Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation))
         self._name.setText(buff.buff_name)
-        desc = get_buff_description(buff.buff_name, lang) or buff.get_description(lang) if hasattr(buff, 'get_description') else get_buff_description(buff.buff_name, lang)
-        self._desc.setText(desc)
+        desc = get_buff_description(buff.buff_name, lang)
+        if not desc and hasattr(buff, 'get_description'):
+            desc = buff.get_description(lang)
+        self._desc.setText(desc or "")
         self.show()
 
 
 class ZonePanel(QFrame):
     def __init__(self):
         QFrame.__init__(self)
-        self.setObjectName("ZonePanel")
-        self.setStyleSheet(_PANEL)
+        self.setObjectName("ZonePanel")  # стиль из QSS темы
         self._info = None
 
         lo = QVBoxLayout(self)
         lo.setContentsMargins(0, 4, 0, 4)
         lo.setSpacing(2)
 
-        # Zone name row
         nr = QHBoxLayout()
         nr.setContentsMargins(8, 0, 8, 2)
         self._prefix = QLabel("◆")
-        self._prefix.setStyleSheet("color:#3a1010; font-size:9px;")
+        self._prefix.setObjectName("NoZone")  # переиспользуем dim цвет
         self._zname = QLabel("—")
         self._zname.setObjectName("ZName")
         nr.addWidget(self._prefix)
@@ -69,7 +62,7 @@ class ZonePanel(QFrame):
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet("background:#1a0e0e; max-height:1px; border:none; margin:0 6px;")
+        sep.setStyleSheet("max-height:1px; border:none; margin:0 6px;")
         lo.addWidget(sep)
 
         self._rows = [_BuffRow() for _ in range(3)]
@@ -80,7 +73,7 @@ class ZonePanel(QFrame):
         self._ph.setObjectName("NoZone")
         lo.addWidget(self._ph)
 
-    def update_zone(self, sz_info):
+    def update_zone(self, sz_info) -> None:
         self._info = sz_info
         lang = get_lang()
         if sz_info is None:
@@ -96,6 +89,6 @@ class ZonePanel(QFrame):
             else:
                 row.hide()
 
-    def retranslate(self):
+    def retranslate(self) -> None:
         if self._info is not None:
             self.update_zone(self._info)
