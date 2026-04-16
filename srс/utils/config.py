@@ -3,6 +3,8 @@ from pathlib import Path
 
 _DEFAULTS = {
     "lang": "EN",
+    "theme": "dark",
+    "volume": 80,
     "notify_satanic": True, "notify_angelic": True,
     "notify_heroic": True,  "sound_enabled": True,
     "save_sessions": True,

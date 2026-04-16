@@ -43,3 +43,42 @@ def list_sessions() -> list[dict]:
         return result
     except Exception:
         return []
+
+
+def export_csv(path: str = None) -> str:
+    """Экспортирует историю сессий в CSV. Возвращает путь к файлу."""
+    import csv, os
+    sessions = list_sessions()
+    if not sessions:
+        return ""
+    if path is None:
+        path = str(sessions_dir().parent / "sessions_export.csv")
+    try:
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["Date", "Character", "Class", "Level",
+                         "Mode", "Difficulty", "Duration",
+                         "Gold Earned", "Gold/h",
+                         "XP Earned", "XP/h",
+                         "Satanic", "Angelic", "Heroic"])
+            for s in sessions:
+                acc  = s.get("character", {})
+                g    = s.get("gold", {})
+                x    = s.get("xp", {})
+                itm  = s.get("items", {})
+                w.writerow([
+                    s.get("timestamp", "")[:16],
+                    acc.get("name", ""),     acc.get("class", ""),
+                    acc.get("level", ""),    acc.get("mode", ""),
+                    acc.get("difficulty", ""),
+                    s.get("session", {}).get("duration", ""),
+                    g.get("earned", 0),      g.get("per_hour", 0),
+                    x.get("earned", 0),      x.get("per_hour", 0),
+                    itm.get("Satanic",  {}).get("total", 0),
+                    itm.get("Angelic",  {}).get("total", 0),
+                    itm.get("Heroic",   {}).get("total", 0),
+                ])
+        return path
+    except Exception as e:
+        logging.getLogger("hero_siege_stats").error(f"CSV export failed: {e}")
+        return ""
