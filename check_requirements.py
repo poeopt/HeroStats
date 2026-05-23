@@ -30,6 +30,18 @@ def check_npcap() -> bool:
             capture_output=True, text=True, timeout=5,
             creationflags=0x08000000
         )
+        if "RUNNING" in result.stdout or "STOPPED" in result.stdout:
+            return True
+    except:
+        pass
+
+    # Check for WinPcap as alternative
+    try:
+        result = subprocess.run(
+            ["sc", "query", "npf"],
+            capture_output=True, text=True, timeout=5,
+            creationflags=0x08000000
+        )
         return "RUNNING" in result.stdout or "STOPPED" in result.stdout
     except:
         return False
