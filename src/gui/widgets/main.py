@@ -70,6 +70,13 @@ class MainWidget(QWidget):
         b_mini.setCheckable(True)
         b_mini.clicked.connect(lambda c: self._toggle_mini(c))
 
+        self._b_lock = QPushButton("🔓")
+        self._b_lock.setObjectName("TbBtnMin")
+        self._b_lock.setFixedSize(22, 22)
+        self._b_lock.setToolTip("Lock HUD (Ctrl+L)")
+        self._b_lock.setCheckable(True)
+        self._b_lock.clicked.connect(self._toggle_lock)
+
         b_min = QPushButton("—")
         b_min.setObjectName("TbBtnMin")
         b_min.setFixedSize(22, 22)
@@ -83,7 +90,7 @@ class MainWidget(QWidget):
 
         tbl.addStretch()
         for w in (self._b_drops, self._b_zones, self._b_chaos,
-                  self._b_set, self._b_faq, b_disc, b_mini, b_min, b_close):
+                  self._b_set, self._b_faq, b_disc, b_mini, self._b_lock, b_min, b_close):
             tbl.addWidget(w)
         root.addWidget(tb)
 
@@ -104,11 +111,17 @@ class MainWidget(QWidget):
         self._mo   = MiniOverlay(on_expand=self._expand_from_mini)
         self._toast = ToastWidget()
         self._mini_active = False
+        self._locked = False
 
         # Глобальный хоткей Ctrl+M — toggle mini overlay
         hotkey = config.get("mini_hotkey") or "Ctrl+M"
         self._mini_shortcut = QShortcut(QKeySequence(hotkey), self)
         self._mini_shortcut.activated.connect(self._toggle_mini_hotkey)
+
+        # Глобальный хоткей Ctrl+L — lock/unlock HUD
+        lock_hotkey = "Ctrl+L"
+        self._lock_shortcut = QShortcut(QKeySequence(lock_hotkey), self)
+        self._lock_shortcut.activated.connect(lambda: self._b_lock.click())
 
         self._b_drops.clicked.connect(lambda c: self._toggle_win(self._dw, self._b_drops, c))
         self._b_zones.clicked.connect(lambda c: self._toggle_win(self._zw, self._b_zones, c))
@@ -249,6 +262,16 @@ class MainWidget(QWidget):
             try: w.retranslate()
             except Exception: pass
         Engine.game_stats.account.retranslate()
+
+    def _toggle_lock(self, checked: bool) -> None:
+        self._locked = checked
+        self._b_lock.setText("🔒" if checked else "🔓")
+        self.set_click_through(checked)
+        self._mo.set_click_through(checked)
+
+    def set_click_through(self, enabled: bool):
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, enabled)
+        self.update()
 
     # ── Close ────────────────────────────────────────────────────
     def _on_close(self) -> None:

@@ -6,7 +6,7 @@ ThemeName = Literal["dark", "dark_red", "light", "light_blue"]
 _P: dict[str, dict] = {
     "dark": {
         "name_ru": "Тёмная", "name_en": "Dark",
-        "bg0": "#0a0707", "bg1": "#100808", "bg2": "#181212", "bg3": "#0f0e0d",
+        "bg0": "rgba(10, 7, 7, 230)", "bg1": "rgba(16, 8, 8, 200)", "bg2": "rgba(24, 18, 18, 180)", "bg3": "rgba(15, 14, 13, 160)",
         "border1": "#1a0e0e", "border2": "#2a1414", "border3": "#3a1a1a",
         "text1": "#C3AF75", "text2": "#7a5030", "text3": "#4a2a1a", "text4": "#3a2010",
         "accent": "#CA1717", "mail_on": "#F6C94E", "mail_off": "#2a1a10",

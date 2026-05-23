@@ -89,25 +89,32 @@ class MiniOverlay(QWidget):
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        path = QPainterPath()
-        path.addRoundedRect(0, 0, self.width(), self.height(), 8, 8)
+        is_locked = self.testAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
 
-        # Градиент фон
+        path = QPainterPath()
+        path.addRoundedRect(0, 0, self.width(), self.height(), 10, 10)
+
+        # Фон с градиентом и разной прозрачностью в зависимости от лока
         grad = QLinearGradient(0, 0, 0, self.height())
-        grad.setColorAt(0.0, QColor(18, 8, 8, 220))
-        grad.setColorAt(1.0, QColor(10, 5, 5, 200))
+        alpha_start = 160 if is_locked else 220
+        alpha_end = 120 if is_locked else 200
+
+        grad.setColorAt(0.0, QColor(15, 5, 5, alpha_start))
+        grad.setColorAt(1.0, QColor(5, 2, 2, alpha_end))
         p.fillPath(path, grad)
 
-        # Рамка
-        p.setPen(QColor(100, 20, 20, 160))
+        # Рамка (более мягкая при локе)
+        border_alpha = 80 if is_locked else 160
+        p.setPen(QColor(120, 30, 30, border_alpha))
         p.drawPath(path)
 
-        # Акцентная линия сверху
-        from PySide6.QtGui import QPen
-        pen = QPen(QColor(180, 30, 30, 120))
-        pen.setWidth(2)
-        p.setPen(pen)
-        p.drawLine(10, 1, self.width() - 10, 1)
+        if not is_locked:
+            # Акцентная линия сверху только когда не залочено
+            from PySide6.QtGui import QPen
+            pen = QPen(QColor(200, 40, 40, 150))
+            pen.setWidth(2)
+            p.setPen(pen)
+            p.drawLine(12, 1, self.width() - 12, 1)
 
     def _blink_dot(self):
         self._blink = not self._blink
@@ -152,5 +159,14 @@ class MiniOverlay(QWidget):
     def mouseDoubleClickEvent(self, e):
         if self._on_expand:
             self._on_expand()
+
+    def set_click_through(self, enabled: bool):
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, enabled)
+        # When click-through is enabled, we usually want to hide any remaining interactive hints
+        if enabled:
+            self.setWindowOpacity(0.8)
+        else:
+            self.setWindowOpacity(1.0)
+        self.update()
 
     def retranslate(self): pass
