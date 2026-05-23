@@ -68,6 +68,10 @@ class CharacterCard(QWidget):
         self._lvl.setObjectName("CharLevel")
         lo.addWidget(self._lvl)
 
+        self._playtime = QLabel("")
+        self._playtime.setObjectName("CharClass")
+        lo.addWidget(self._playtime)
+
         lo.addStretch()
 
         self._mode_badge = QLabel("")
@@ -103,6 +107,13 @@ class CharacterCard(QWidget):
         self._name.setText(acc.name)
         hero = f"  ·  Hero {acc.hero_level}" if acc.hero_level else ""
         self._lvl.setText(f"Lv.{acc.level}{hero}")
+
+        if acc.playtime:
+            h = acc.playtime // 3600
+            m = (acc.playtime % 3600) // 60
+            self._playtime.setText(f" [{h}h {m}m]")
+        else:
+            self._playtime.setText("")
 
         mb, mf = self._MODE_STYLE.get(acc.mode, ("", ""))
         self._mode_badge.setText(acc.mode_label)
@@ -275,6 +286,14 @@ class StatsLayout(QWidget):
         self._s_zone.add_widget(self.zone_panel)
         lo.addWidget(self._s_zone)
 
+        # Character Advanced Stats
+        self._s_char = CollapsibleSection("Character Details", "char_details", False)
+        self._char_ssf = ValueDisplay(value="SSF: —", size=Sizes.Medium)
+        self._char_merc = ValueDisplay(value="Merc: —", size=Sizes.Medium)
+        self._char_inc = ValueDisplay(value="Inc: 0", size=Sizes.Medium)
+        self._s_char.add_widget(_Row(self._char_ssf, self._char_merc, self._char_inc))
+        lo.addWidget(self._s_char)
+
     def update_stats(self, stats: Stats):
         self.char_card.update_account(stats.account)
         self.session_row.update(stats.session, stats.death_count)
@@ -312,6 +331,11 @@ class StatsLayout(QWidget):
         self._S2.setValue(f'{_c(_SATANIC, f"{sh}/h")}')
 
         self.zone_panel.update_zone(stats.satanic_zone.satanic_zone_info)
+
+        a = stats.account
+        self._char_ssf.setValue(f"SSF: {'Yes' if a.ssf else 'No'}")
+        self._char_merc.setValue(f"Merc: {'Alive' if a.merc_alive else 'Dead'}")
+        self._char_inc.setValue(f"Inc: {a.incarnation_exp:,}")
 
     def refresh(self):
         self.update_stats(Engine.get_stats())

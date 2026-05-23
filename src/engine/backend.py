@@ -148,8 +148,10 @@ class Backend:
             return (
                 "OK" in iface.flags
                 and iface.ip
+                and not iface.ip.startswith("169.254")  # Ignore APIPA
                 and "Virtual"  not in iface.description
                 and "Hyper-V"  not in iface.description
+                and "Loopback" not in iface.description
             )
 
         # Точное совпадение IP

@@ -33,10 +33,29 @@ def _check_npcap_on_start() -> bool:
         return False
 
 
+def _is_admin() -> bool:
+    try:
+        import ctypes
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except:
+        return False
+
 def run():
     log = logging.getLogger(LOGGING_NAME)
     icon_fix()
     app = QApplication(sys.argv)
+
+    if sys.platform == "win32" and not _is_admin():
+        from PySide6.QtWidgets import QMessageBox
+        msg = QMessageBox()
+        msg.setWindowTitle("Hero Siege Stats — Rights Required")
+        msg.setIcon(QMessageBox.Icon.Critical)
+        msg.setText(
+            "Application requires Administrative privileges to capture network traffic.\n\n"
+            "Please restart Hero Siege Stats as Administrator."
+        )
+        msg.exec()
+        sys.exit(0)
     QFontDatabase.addApplicationFont(assets.font("cookierunbold.ttf"))
     QFontDatabase.addApplicationFont(assets.font("otsutomefont.ttf"))
     app.setStyle("fusion")

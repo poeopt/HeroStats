@@ -16,6 +16,9 @@ class Account:
         self.diff_label = "—"
         self.is_hardcore = False
         self.playtime = 0
+        self.ssf = False
+        self.incarnation_exp = 0
+        self.merc_alive = False
 
     def update_from_message(self, msg) -> None:
         lang = get_lang()
@@ -29,6 +32,9 @@ class Account:
         self.diff_label = get_difficulty_label(msg.difficulty, msg.hell_subdifficulty, lang)
         self.is_hardcore = bool(msg.hardcore)
         self.playtime   = getattr(msg, 'playtime', 0)
+        self.ssf        = bool(getattr(msg, 'soloselffound', 0))
+        self.incarnation_exp = getattr(msg, 'incarnation_exp', 0)
+        self.merc_alive = bool(getattr(msg, 'merc_alive', 0))
         raw_mode        = msg.get_current_season_mode()
         self.mode       = raw_mode
         self.mode_label = get_mode_label(raw_mode, lang)
